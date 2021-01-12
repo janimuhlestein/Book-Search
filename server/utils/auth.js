@@ -1,23 +1,22 @@
 const jwt = require('jsonwebtoken');
-//const { populate } = require('../models/User');
 
-// set token secret and expiration date
 const secret = 'mysecretsshhhhh';
 const expiration = '2h';
 
 module.exports = {
   authMiddleware: function({ req }) {
+    // allows token to be sent via req.body, req.query, or headers
     let token = req.body.token || req.query.token || req.headers.authorization;
 
-    //Bearer, <token> 
-    if(req.headers.authorization) {
+    // ["Bearer", "<tokenvalue>"]
+    if (req.headers.authorization) {
       token = token
-      .split(' ')
-      .pop()
-      .trim();
+        .split(' ')
+        .pop()
+        .trim();
     }
 
-    if(!token) {
+    if (!token) {
       return req;
     }
 
@@ -33,6 +32,6 @@ module.exports = {
   signToken: function({ username, email, _id }) {
     const payload = { username, email, _id };
 
-    return jwt.sign({ data: payload }, secret, { expiresIn: expiraction });
+    return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
   }
 };

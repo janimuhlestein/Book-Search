@@ -1,16 +1,17 @@
 const { AuthenticationError } = require('apollo-server-express');
-const { User} = require("../models");
+const { User } = require("../models");
 const { signToken } = require('../utils/auth');
 
 const resolvers = {
     Query: {
-        me: async(parent, args, context) => {
-            if(context.user) {
-                const userData = await User.findOne({_id: context.user._id})
+        me: async (parent, args, context) => {
+            if (context.user) {
+              const userData = await User.findOne({ _id: context.user._id })
                 .select('-__v -password')
-                .populate('savedBooks');
-
-                return userData;
+                .populate('savedBooks')
+                .populate('bookCount');
+      
+              return userData;
             }
             throw new AuthenticationError('Not logged in');
         },
@@ -33,7 +34,7 @@ const resolvers = {
 
             return { token, user};
         },
-        loginUser: async (parent, { email, password }) => {
+        login: async (parent, { email, password }) => {
             const user = await User.findOne({ email });
             if (!user) {
                 throw new AuthenticationError('IncorrectCredentials');
@@ -60,7 +61,7 @@ const resolvers = {
         },
         removeBook: async (parent, bookId, context) => {
             if(context.user) {
-                const updatedUser = await User.findOneAndUodate(
+                const updatedUser = await User.findOneAndUpdate(
                     { _id: context.user._id },
                     { $pull: { savedBooks: bookId }},
                     { new: true }
