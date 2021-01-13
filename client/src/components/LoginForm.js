@@ -37,8 +37,8 @@ const LoginForm = (props) => {
       //const { token, user } = await response.json();
       console.log(data);
       Auth.login(data.login.token);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       setShowAlert(true);
     }
 
